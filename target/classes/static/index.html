@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supply Chain</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Dynamic Background -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div id="app" class="glass-container">
+        
+        <!-- Authentication Section -->
+        <section id="auth-section" class="active">
+            <div class="header-text">
+                <h1 style="color: #fff; font-size: 3.5rem; margin-bottom: 10px;">SupplyBridge</h1>
+                <p>Enterprise Supply Chain & Inventory Management</p>
+            </div>
+
+            <div class="auth-tabs" style="max-width: 400px; margin: 30px auto 20px;">
+                <button id="tab-login" class="active" onclick="toggleAuth('login')">🔑 Login</button>
+                <button id="tab-register" onclick="toggleAuth('register')">📝 Register</button>
+            </div>
+
+            <div style="max-width: 400px; margin: 0 auto;">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="login-username" placeholder="e.g. admin" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" placeholder="••••••••" required />
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">🚀 Sign In to Dashboard</button>
+                </form>
+
+                <form id="register-form" class="hidden">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="reg-username" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="reg-email" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="reg-password" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Join As</label>
+                        <select id="reg-role">
+                            <option value="CUSTOMER">🛒 Customer</option>
+                            <option value="SUPPLIER">🚛 Supplier Partner</option>
+                            <option value="ADMIN">🛡️ Administrator</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">✨ Create Account</button>
+                </form>
+            </div>
+            <div id="auth-alert" class="alert hidden"></div>
+        </section>
+
+        <!-- Main Dashboard Section -->
+        <section id="dashboard-section" class="hidden">
+            <header>
+                <div>
+                    <h2 id="dash-title">Command Center</h2>
+                    <p id="user-welcome" style="color: var(--text-secondary);">Welcome back, User</p>
+                </div>
+                <button class="btn-danger" id="logout-btn">Logout</button>
+            </header>
+
+            <nav class="dash-nav">
+                <button class="nav-btn active" data-target="products-view">
+                    <span>📦</span> Products
+                </button>
+                <button class="nav-btn" data-target="orders-view">
+                    <span>🛒</span> My Orders
+                </button>
+                <!-- Role Specific Nav Items -->
+                <button class="nav-btn supplier-only hidden" data-target="inventory-view">
+                    <span>📉</span> My Inventory
+                </button>
+                <button class="nav-btn admin-only hidden" data-target="suppliers-view">
+                    <span>🤝</span> Suppliers
+                </button>
+                <button class="nav-btn admin-only hidden" data-target="stats-view">
+                    <span>📊</span> Analytics
+                </button>
+                <button class="nav-btn admin-only hidden" data-target="deliveries-view">
+                    <span>🚚</span> Deliveries
+                </button>
+            </nav>
+
+            <main id="view-container">
+                <!-- Products Explorer (Marketplace for Customers / Management for Admin) -->
+                <div id="products-view" class="view active">
+                    <div class="action-bar">
+                        <h3>Product Catalog</h3>
+                        <button class="btn-primary admin-only supplier-only hidden" onclick="openModal('product-modal')">
+                            + Add New Product
+                        </button>
+                    </div>
+                    <div class="grid" id="product-list">
+                        <!-- Products injected here -->
+                    </div>
+                </div>
+
+                <!-- Personal Orders (All roles see their own) -->
+                <div id="orders-view" class="view hidden">
+                    <h3>Order History</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="order-list">
+                                <!-- Orders injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Supplier Specific: Inventory Management -->
+                <div id="inventory-view" class="view hidden">
+                    <div class="action-bar">
+                        <h3>Inventory Stock Control</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Current Stock</th>
+                                    <th>Threshold</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-list">
+                                <!-- Inventory items injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Specific: Supplier Management -->
+                <div id="suppliers-view" class="view hidden">
+                    <div class="action-bar">
+                        <h3>Supply Chain Partners</h3>
+                        <button class="btn-primary" onclick="openModal('supplier-modal')">+ Register Supplier</button>
+                    </div>
+                    <div class="grid" id="supplier-list">
+                        <!-- Suppliers injected here -->
+                    </div>
+                </div>
+
+                <!-- Admin Specific: Detailed Statistics -->
+                    </div>
+                </div>
+
+                <!-- Admin Specific: Delivery Management -->
+                <div id="deliveries-view" class="view hidden">
+                    <div class="action-bar">
+                        <h3>Delivery Management</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ref ID</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="delivery-management-list">
+                                <!-- Deliveries injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </section>
+    </div>
+
+    <!-- Modals -->
+    <div id="product-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="modal-title">Product Details</h3>
+            <form id="product-form">
+                <input type="hidden" id="prod-id">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="prod-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="prod-desc" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Product Image URL</label>
+                    <input type="url" id="prod-image" placeholder="https://unsplash.com/...">
+                </div>
+                <div class="form-group">
+                    <label>Price ($)</label>
+                    <input type="number" step="0.01" id="prod-price" required>
+                </div>
+                <div class="form-group" id="initial-stock-group">
+                    <label>Initial Stock Quantity</label>
+                    <input type="number" id="prod-stock" value="0">
+                </div>
+                <div class="form-group admin-only">
+                    <label>Supplier</label>
+                    <select id="prod-supplier"></select>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">Save Product</button>
+                    <button type="button" class="btn-ghost" onclick="closeModal('product-modal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="supplier-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="modal-title">Supplier Registration</h3>
+            <form id="supplier-form">
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" id="supp-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact Email</label>
+                    <input type="email" id="supp-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" id="supp-phone">
+                </div>
+                <div class="form-group">
+                    <label>Physical Address</label>
+                    <input type="text" id="supp-address">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">Register Partner</button>
+                    <button type="button" class="btn-ghost" onclick="closeModal('supplier-modal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="stock-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="modal-title">Update Inventory</h3>
+            <form id="stock-form">
+                <input type="hidden" id="stock-inv-id">
+                <div class="form-group">
+                    <label>Adjustment Quantity (±)</label>
+                    <input type="number" id="stock-qty" required>
+                    <p style="font-size: 0.8rem; margin-top: 5px;">This will adjust the current available stock.</p>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">Commit Changes</button>
+                    <button type="button" class="btn-ghost" onclick="closeModal('stock-modal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Feedback Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
